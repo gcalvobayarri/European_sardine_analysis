@@ -1,0 +1,35 @@
+model{
+  for (i in 1: N){
+    for (t in 1: T){
+      Y[i, t] ~ dnorm(Mi[i, t], lambda) 
+      Mi[i, t] <- beta0 + b0[i] + (b1[i]) * (t - 1)
+    }
+  }
+
+  ## PRIORS
+  # lambda
+  
+  lambda <- 1 / (sigma * sigma)
+  sigma ~ dunif(0, 10)
+  
+  
+  # beta0
+
+  beta0 ~ dnorm(0, 0.01)
+  
+  # b0 
+  for (i in 1: N){
+    b0[i] ~ dnorm(0, lambda0)
+  }
+  lambda0 <- 1 / (I0_sigma * I0_sigma)
+  I0_sigma ~ dunif(0, 10)
+  
+  # b1
+  for (i in 1: N){
+    b1[i] ~ dnorm(0, lambda1)
+  }
+  lambda1 <- 1 / (T1_sigma * T1_sigma)
+  T1_sigma ~ dunif(0, 10)
+  
+
+}
