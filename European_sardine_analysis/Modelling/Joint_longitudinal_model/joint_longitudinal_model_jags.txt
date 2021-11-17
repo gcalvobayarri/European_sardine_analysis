@@ -30,7 +30,7 @@ model{
   sigma ~ dunif(0,10)
   
   
-  # Mi prior
+  # betas prior
 
   beta01 ~ dnorm(0, 0.01)
   beta02 ~ dnorm(0, 0.01)
@@ -63,10 +63,10 @@ model{
   T12_sigma ~ dunif(0,10)
   tau12 <- 1 / (T12_sigma * T12_sigma)
 
-  nu_0 ~ dunif(-1, 1)
-  nu_1 ~ dunif(-1, 1)
+  nu_0 ~ dunif(-1, 1) #rho0
+  nu_1 ~ dunif(-1, 1) #rho1
 
-# Precision matrices
+# Variance-covariance matrices
   Sigma0[1,1] <- I01_sigma * I01_sigma
   Sigma0[1,2] <- nu_0 * I01_sigma * I02_sigma 
   Sigma0[2,1] <- nu_0 * I01_sigma * I02_sigma 
