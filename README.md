@@ -1,4 +1,4 @@
-European Sardine Analysis Code Documentation
+# European Sardine Analysis Code Documentation
 SOFTWARE NEEDED: R and JAGS. All codes are in the R language.
 
 This folder contains the statistical analysis carried out in the paper "Bayesian joint longitudinal models for assessing the exploitation rates of sardine stock in the Mediterranean Sea". The material available here is as follows.
