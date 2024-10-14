@@ -1,0 +1,98 @@
+model{
+  for (i in 1 : 10){
+    Y1[i,1] ~ dnorm(mu1[i, 1], lambda[1])
+    mu1[i,1] <- beta01 + b0[i, 1]
+
+    Y2[i,1] ~ dnorm(mu2[i, 1], lambda[2])
+    mu2[i,1] <- beta02 + b0[i, 2]
+   
+    for (t in 2 : T){
+      # Industrial 
+      Y1[i, t] ~ dnorm(Mi1[i, t], lambda[1]) 
+      mu1[i, t] <- beta01 + b0[i, 1] + (beta11 + b1[i, 1]) * (t - 1)
+      Mi1[i, t] <- mu1[i, t] + rho[1] * (Y1[i,t-1]-mu1[i,t-1])
+
+      # Artisanal 
+      Y2[i, t] ~ dnorm(Mi2[i, t], lambda[2]) 
+      mu2[i, t] <- beta02 + b0[i, 2] + (beta12 + b1[i, 2]) * (t - 1)
+      Mi2[i, t] <- mu2[i, t] + rho[2] * (Y2[i,t-1]-mu2[i,t-1])
+    }
+    
+  }
+
+    Y1[11,1] ~ dnorm(mu1[11, 1], lambda[1]) #Albania
+    mu1[11,1] <- beta01 + b0Albania
+
+    Y2[11,1] ~ dnorm(mu2[11, 1], lambda[2]) #Bosnia
+    mu2[11,1] <- beta02 + b0Bosnia
+
+  for (t in 2 : T){
+    # Industrial Albania
+    Y1[11, t] ~ dnorm(Mi1[11, t], lambda[1]) 
+    mu1[11, t] <- beta01 + b0Albania + (beta11 + b1Albania) * (t - 1)
+    Mi1[11, t] <- mu1[11, t] + rho[1] * (Y1[11,t-1]-mu1[11,t-1])
+
+      # Artisanal Bosnia
+      Y2[11, t] ~ dnorm(Mi2[11, t], lambda[2]) 
+      mu2[11, t] <- beta02 + b0Bosnia + (beta12 + b1Bosnia) * (t - 1)
+      Mi2[11, t] <- mu2[11, t] + rho[2] * (Y2[11,t-1]-mu2[11,t-1])
+    }
+
+ ## PRIORS
+
+  # rho
+
+  rho[1] ~ dunif(-1, 1) 
+  rho[2] ~ dunif(-1, 1) 
+
+  # lambda
+  
+  lambda[1] <- 1 / (sigma[1] * sigma[1])
+  sigma[1] ~ dunif(0, 100)
+
+  lambda[2] <- 1 / (sigma[2] * sigma[2])
+  sigma[2] ~ dunif(0, 100)
+    
+  
+  # mu prior
+  
+  beta01 ~ dnorm(0, 0.01)
+  beta02 ~ dnorm(0, 0.01)
+  beta11 ~ dnorm(0, 0.01)
+  beta12 ~ dnorm(0, 0.01)
+
+  # b0, b1 prior
+  for (i in 1: 10){
+    b0[i, 1:2] ~ dmnorm(rep(0,2), Omega0[,])
+    b1[i, 1:2] ~ dmnorm(rep(0,2), Omega1[,])
+  }
+
+  b0Albania ~ dnorm(0, Omega0[1, 1])
+  b0Bosnia ~ dnorm(0, Omega0[2, 2])
+
+  b1Albania ~ dnorm(0, Omega1[1, 1])
+  b1Bosnia ~ dnorm(0, Omega1[2, 2])
+
+
+  Omega0 <- inverse(Sigma0)
+  Omega1 <- inverse(Sigma1)
+
+  Sigma0[1, 1] <- sigma0[1] * sigma0[1]
+  Sigma0[2, 2] <- sigma0[2] * sigma0[2]
+  Sigma0[1, 2] <- rho0 * sigma0[1] * sigma0[2]
+  Sigma0[2, 1] <- Sigma0[1, 2]
+
+  Sigma1[1, 1] <- sigma1[1] * sigma1[1]
+  Sigma1[2, 2] <- sigma1[2] * sigma1[2]
+  Sigma1[1, 2] <- rho1 * sigma1[1] * sigma1[2]
+  Sigma1[2, 1] <- Sigma1[1, 2]
+
+  rho0 ~ dunif(-1, 1) 
+  rho1 ~ dunif(-1, 1)
+
+  sigma0[1] ~ dunif(0, 100) 
+  sigma0[2] ~ dunif(0, 100)
+
+  sigma1[1] ~ dunif(0, 100) 
+  sigma1[2] ~ dunif(0, 100)
+}
